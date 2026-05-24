@@ -1,9 +1,10 @@
-# Ex-5-RECOGNITION-OF-THE-GRAMMAR-anb-where-n-10-USING-YACC
-RECOGNITION OF THE GRAMMAR(anb where n>=10) USING YACC
-# Date: 22.10.2024
-# Aim:
-To write a YACC program to recognize the grammar anb where n>=10.
-# ALGORITHM
+# Ex.No:5
+# RECOGNITION OF THE GRAMMAR(a^nb where n>=10) USING YACC
+## Register Number: 212223040083
+## Date:22.05.2026
+## AIM:
+To write a YACC program to recognize the grammar a^nb where n>=10.
+## ALGORITHM:
 1.	Start the program.
 2.	Write a program in the vi editor and save it with .l extension.
 3.	In the lex program, write the translation rules for the variables a and b.
@@ -12,58 +13,82 @@ To write a YACC program to recognize the grammar anb where n>=10.
 6.	Compile the yacc program with yacc compiler to produce output file as y.tab.c. eg $ yacc –d arith_id.y
 7.	Compile these with the C compiler as gcc lex.yy.c y.tab.c
 8.	Enter a string as input and it is identified as valid or invalid.
-# PROGRAM:
+## PROGRAM:
+expr5.l
 ```
-// EXP5.l file
-%{
-/* Definition section */ #include "y.tab.h"
-%}
-
-/* Rule Section */
-%%
-[aA] {return A;}
-[bB] {return B;}
-\n {return NL;}
-. {return yytext[0];}
-%%
-
-int yywrap()
-{
-return 1;
-}
-// EXP5.y file
 
 %{
-/* Definition section */
-#include<stdio.h> 
-#include<stdlib.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+int count = 0;  // count of 'a's
+int yylex(void);
+void yyerror(const char *s);
 %}
 
-%token A B NL
+%token A B INVALID
 
-/* Rule Section */
-%%
-stmt: S NL { printf("valid string\n");
-exit(0); }
-;
-S: A S B |;
 %%
 
-int yyerror(char *msg)
-{
-printf("invalid string\n"); exit(0);
-}
-int main()
-{
-printf("enter the string\n"); yyparse();
+input:
+    A_seq B '\n' {
+        if (count >= 10) {
+            printf("Valid string: a^n b where n >= 10\n");
+        } else {
+            printf("Invalid: less than 10 'a's before 'b'\n");
+        }
+        count = 0; // reset for next input
+    }
+  | INVALID '\n' {
+        printf("Invalid character in input.\n");
+        count = 0;
+    }
+  ;
+
+A_seq:
+    A           { count = 1; }
+  | A_seq A     { count++; }
+  ;
+
+%%
+
+int main() {
+    printf("Enter strings (e.g., aaa...ab), one per line (Ctrl+D to quit):\n");
+    while (yyparse() == 0);
+    return 0;
 }
 
+void yyerror(const char *s) {
+    // Errors handled in grammar
+}
 
 ```
-# OUTPUT
-![379688830-efe62914-544c-47f9-bbe7-a36f581beb6a](https://github.com/user-attachments/assets/0ad9fbad-420d-40ac-85f0-abfbe3b2c634)
+
+expr5.y
+```
+
+%{
+#include "expr5.tab.h"
+%}
+
+%%
+
+a       { return A; }
+b       { return B; }
+\n      { return '\n'; }
+.       { return INVALID; }
+
+%%
+int yywrap() {
+    return 1;
+}
+
+```
+
+## OUTPUT:
+
+<img width="1472" height="577" alt="image" src="https://github.com/user-attachments/assets/d9864e11-3f36-40d4-8c0b-71e91a626c9d" />
 
 
-
-# RESULT
+## RESULT:
 The YACC program to recognize the grammar anb where n>=10 is executed successfully and the output is verified.
